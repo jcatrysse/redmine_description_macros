@@ -26,7 +26,7 @@ Redmine::WikiFormatting::Macros.register do
           if child.tracker.name == tracker
             break unless all or siblings_found == 0
             unless obj.id == child.id
-              content += textilizable("**##{child.id}: #{child.subject}**")+"\r\n"+child.description+textilizable("----------")+"\r\n"
+              content += textilizable("**##{child.id}: #{child.subject}**")+"\r\n"+textilizable(child.description)+textilizable("----------")
               siblings_found += 1
             end
           end
@@ -53,7 +53,7 @@ Redmine::WikiFormatting::Macros.register do
       obj.children.each do |child|
         if child.tracker.name.downcase.strip == tracker.downcase.strip
           break unless all or children_found == 0
-          content += textilizable("**##{child.id}: #{child.subject}**")+"\r\n"+child.description+textilizable("----------")+"\r\n"
+          content += textilizable("**##{child.id}: #{child.subject}**")+"\r\n"+textilizable(child.description)+textilizable("----------")
           children_found += 1
         end
       end
