@@ -1,9 +1,9 @@
 Redmine::WikiFormatting::Macros.register do
   desc "Insert the description of the parent"
   macro :parent_description do |obj, args|
-    if obj.parent and obj.parent.present?
+    if obj&.parent&.present?
       parent = Issue.visible.find_by(id: obj.parent.id)
-      return textilizable(parent.description)
+      return textilizable(parent.description) if parent
     else
       return textilizable("*no parent found*")
     end
@@ -21,7 +21,7 @@ Redmine::WikiFormatting::Macros.register do
     issue = nil
     content = ""
     options = {}
-    if obj.parent and obj.parent.present?
+    if obj&.parent&.present?
       parent = Issue.visible.find_by(id: obj.parent.id)
       issue = parent
     else
@@ -55,7 +55,7 @@ Redmine::WikiFormatting::Macros.register do
       content = "*tracker name should be given as argument to macro sibling_description*";
     else
       tracker = args[0]
-      if obj.parent and obj.parent.present?
+      if obj&.parent&.present?
         parent = Issue.visible.find_by(id: obj.parent.id)
         parent.children.each do |child|
           if child.tracker.name == tracker
@@ -65,7 +65,7 @@ Redmine::WikiFormatting::Macros.register do
               siblings_found += 1
             end
           end
-        end
+        end if parent
       end
     end
     if siblings_found == 0
@@ -92,7 +92,7 @@ Redmine::WikiFormatting::Macros.register do
       args, options = extract_macro_options(args, :project, :tracker, :subject)
 
       tracker = args[0]
-      if obj.parent and obj.parent.present?
+      if obj&.parent&.present?
         parent = Issue.visible.find_by(id: obj.parent.id)
         parent.children.each do |child|
           if child.tracker.name == tracker
@@ -102,7 +102,7 @@ Redmine::WikiFormatting::Macros.register do
               siblings_found += 1
             end
           end
-        end
+        end if parent
       end
     end
     if siblings_found == 0
