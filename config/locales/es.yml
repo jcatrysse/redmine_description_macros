@@ -1,0 +1,12 @@
+eso:
+  labels:
+    general_macro_settings: General Macro settings
+    general_macro_settings_description: "Para recuperar una lista de macros disponibles, use: {{macro_list}}"
+    debug_macro_settings: Debug Macro Settings
+    enable_child_description_macro: Habilitar macro de descripción de hijo
+    enable_child_issue_macro: Habilitar macro de issue de hijo
+    enable_parent_description_macro: Habilitar macro de descripción de padre
+    enable_parent_issue_macro: Habilitar macro de issue de padre
+    enable_sibling_description_macro: Habilitar macro de descripción de hermano
+    enable_sibling_issue_macro: Habilitar macro de issue de hermano
+    enable_macro_debug_messages: Enable Macro Debug Messages

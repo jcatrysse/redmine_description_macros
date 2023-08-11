@@ -1,0 +1,12 @@
+nl:
+  labels:
+    general_macro_settings: Algemene Macro instellingen
+    general_macro_settings_description: "Om een lijst met beschikbare macro's op te halen, gebruik: {{macro_list}}"
+    debug_macro_settings: Debug Macro instellingen
+    enable_child_description_macro: Child Beschrijving Macro inschakelen
+    enable_child_issue_macro: Child Issue Macro inschakelen
+    enable_parent_description_macro: Parent Beschrijving Macro inschakelen
+    enable_parent_issue_macro: Parent Issue Macro inschakelen
+    enable_sibling_description_macro: Sibling Beschrijving Macro inschakelen
+    enable_sibling_issue_macro: Sibling Issue Macro inschakelen
+    enable_macro_debug_messages: Macro Debug Berichten inschakelen

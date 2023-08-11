@@ -1,0 +1,41 @@
+<fieldset class="box tabular settings">
+  <legend><%= l('labels.general_macro_settings') %></legend>
+  <p>
+    <%= label_tag 'enable_child_description_macro', t('labels.enable_child_description_macro') %>
+    <%= check_box_tag 'settings[enable_child_description_macro]', 1, @settings['enable_child_description_macro'] %>
+  </p>
+  <p>
+    <%= label_tag 'enable_child_issue_macro', t('labels.enable_child_issue_macro') %>
+    <%= check_box_tag 'settings[enable_child_issue_macro]', 1, @settings['enable_child_issue_macro'] %>
+  </p>
+  <p>
+    <%= label_tag 'enable_parent_description_macro', t('labels.enable_parent_description_macro') %>
+    <%= check_box_tag 'settings[enable_parent_description_macro]', 1, @settings['enable_parent_description_macro'] %>
+  </p>
+  <p>
+    <%= label_tag 'enable_parent_issue_macro', t('labels.enable_parent_issue_macro') %>
+    <%= check_box_tag 'settings[enable_parent_issue_macro]', 1, @settings['enable_parent_issue_macro'] %>
+  </p>
+  <p>
+    <%= label_tag 'enable_sibling_description_macro', t('labels.enable_sibling_description_macro') %>
+    <%= check_box_tag 'settings[enable_sibling_description_macro]', 1, @settings['enable_sibling_description_macro'] %>
+  </p>
+  <p>
+    <%= label_tag 'enable_sibling_issue_macro', t('labels.enable_sibling_issue_macro') %>
+    <%= check_box_tag 'settings[enable_sibling_issue_macro]', 1, @settings['enable_sibling_issue_macro'] %>
+  </p>
+  <p>
+    <small>
+      <%= t('labels.general_macro_settings_description') %>
+    </small>
+  </p>
+</fieldset>
+<fieldset class="box tabular settings">
+  <legend><%= l('labels.debug_macro_settings') %></legend>
+  <p>
+    <%= label_tag 'enable_macro_debug_messages', t('labels.enable_macro_debug_messages') %>
+    <%= check_box_tag 'settings[enable_macro_debug_messages]', 1, @settings['enable_macro_debug_messages'] %>
+  </p>
+</fieldset>
+
+

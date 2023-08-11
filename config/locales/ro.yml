@@ -1,0 +1,12 @@
+ro:
+  labels:
+    general_macro_settings: General Macro settings
+    general_macro_settings_description: "Pentru a prelua o listă de macrocomenzi disponibile, utilizați: {{macro_list}}"
+    debug_macro_settings: Debug Macro Settings
+    enable_child_description_macro: Activare macro descriere copil
+    enable_child_issue_macro: Activare macro problemă copil
+    enable_parent_description_macro: Activare macro descriere părinte
+    enable_parent_issue_macro: Activare macro problemă părinte
+    enable_sibling_description_macro: Activare macro descriere frate/soră
+    enable_sibling_issue_macro: Activare macro problemă frate/soră
+    enable_macro_debug_messages: Enable Macro Debug Messages
