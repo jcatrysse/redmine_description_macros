@@ -15,7 +15,7 @@ Redmine::Plugin.register :redmine_description_macros do
     'enable_parent_issue_macro' => true,
     'enable_sibling_description_macro' => true,
     'enable_sibling_issue_macro' => true,
-    'enable_macro_debug_messages' => false
+    'enable_macro_debug_messages' => true
   }, partial: 'settings/redmine_description_macros_settings'
 end
 
