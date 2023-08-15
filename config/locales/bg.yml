@@ -1,0 +1,14 @@
+# Bulgarian translation by Ivan Cenov
+bg:
+  labels:
+    general_macro_settings: Общи настройки на макросите
+    general_macro_settings_description: "За да видите списък на всички налични макроси, използвайте: {{macro_list}}"
+    debug_macro_settings: Отстраняване на грешки в настройките на макросите
+    enable_child_description_macro: Разрешен макрос за описание на подзадачи
+    enable_child_issue_macro: Разрешен макрос за подзадачи
+    enable_parent_description_macro: Разрешен макрос за описание на родителски задачи
+    enable_parent_issue_macro: Разрешен макрос за родителски задачи
+    enable_sibling_description_macro: Разрешен макрос за описание на съседни задачи
+    enable_sibling_issue_macro: Разрешен макрос за съседни задачи
+    enable_macro_debug_messages: Разрешени съобщения за отстраняване на грешки
+    
