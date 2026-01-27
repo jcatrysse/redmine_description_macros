@@ -1,5 +1,5 @@
-fr_macro:
-  labels_macro:
+fr:
+  labels:
     general_macro_settings: General Macro settings
     general_macro_settings_description: "Pour récupérer une liste des macros disponibles, utilisez : {{macro_list}}"
     debug_macro_settings: Debug Macro Settings

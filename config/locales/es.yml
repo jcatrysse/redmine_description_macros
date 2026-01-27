@@ -1,4 +1,4 @@
-eso:
+es:
   labels:
     general_macro_settings: General Macro settings
     general_macro_settings_description: "Para recuperar una lista de macros disponibles, use: {{macro_list}}"
