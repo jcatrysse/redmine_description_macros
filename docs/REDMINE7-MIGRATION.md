@@ -58,7 +58,7 @@ Additional findings fixed (not in the analysis): `parent_issue`, `child_issue`, 
 | | PostgreSQL 16.15 | MariaDB 10.11.14 |
 |---|---|---|
 | plugin tests (`test/helpers/macros_test.rb`) | 31 runs, 53 assertions, 0 failures | 31 runs, 53 assertions, 0 failures |
-| e2e (production mode) | smoke 11, core 6, 10 scenarios (api, child_description, child_issue, macro_list, note, parent_description, parent_issue, settings, sibling_description, sibling_issue): 0 problems, 59 screenshots | same, 0 problems (screenshots in /tmp only, identical scenarios) |
+| e2e (production mode) | smoke 11, core 6, 10 scenarios (api, child_description, child_issue, macro_list, note, parent_description, parent_issue, settings, sibling_description, sibling_issue): 0 problems, 59 screenshots | same, 0 problems (screenshots in docs/e2e-mariadb) |
 
 Tests that fail without the fixes: 8 of the 31 (checked by stashing macros.rb). Migrations: none. Eager load: production server booted on both. Not run together with other GEOxyz plugins (only this plugin installed here).
 
