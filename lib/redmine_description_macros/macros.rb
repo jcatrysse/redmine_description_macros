@@ -6,6 +6,7 @@ module RedmineDescriptionMacros
         next unless Setting.plugin_redmine_description_macros['enable_parent_description_macro']
         debug_messages = Setting.plugin_redmine_description_macros['enable_macro_debug_messages']
         issue_stack = Thread.current[:issue_obj_stack] ||= [] # Initialize the issue object stack if it doesn't exist
+        pushed = false
         obj ||= issue_stack.last # Try to get the object from the top of the stack if obj is nil
 
         if obj.nil?
@@ -22,6 +23,7 @@ module RedmineDescriptionMacros
         next textilizable(debug_messages ? loop_detected_message : nil) if issue_stack.map(&:id).count(obj.id) > 1 # Check for loops using the stack
 
         issue_stack.push(obj) # Push the current object onto the stack
+        pushed = true
 
         output = if obj.parent&.present?
                    if obj.parent.visible?
@@ -33,10 +35,9 @@ module RedmineDescriptionMacros
                    textilizable("*no parent found*")
                  end
 
-        issue_stack.pop # Pop the current object off the stack since we're done with it
         output
       ensure
-        issue_stack.pop if issue_stack.any? # If the stack is empty, reset the processed issues set
+        issue_stack.pop if pushed # Only pop what this call pushed
       end
     end
 
@@ -50,6 +51,7 @@ module RedmineDescriptionMacros
         next unless Setting.plugin_redmine_description_macros['enable_parent_issue_macro']
         debug_messages = Setting.plugin_redmine_description_macros['enable_macro_debug_messages']
         issue_stack = Thread.current[:issue_obj_stack] ||= [] # Initialize the issue object stack if it doesn't exist
+        pushed = false
         obj ||= issue_stack.last # Try to get the object from the top of the stack if obj is nil
 
         if obj.nil?
@@ -66,22 +68,26 @@ module RedmineDescriptionMacros
         next textilizable(debug_messages ? loop_detected_message : nil) if issue_stack.map(&:id).count(obj.id) > 1 # Check for loops using the stack
 
         issue_stack.push(obj) # Push the current object onto the stack
+        pushed = true
 
         output = if obj.parent&.present?
-                   args, options = extract_macro_options(args, :project, :tracker, :subject)
-                   options.delete_if {|k, v| v != 'true' && v != 'false'} # remove invalid options
-                   options.each do |k, v| # turn string values into boolean
-                     options[k] = v == 'true'
+                   if obj.parent.visible?
+                     args, options = extract_macro_options(args, :project, :tracker, :subject)
+                     options.delete_if {|k, v| v != 'true' && v != 'false'} # remove invalid options
+                     options.each do |k, v| # turn string values into boolean
+                       options[k] = v == 'true'
+                     end
+                     link_to_issue(obj.parent, options)
+                   else
+                     textilizable("*parent not visible*")
                    end
-                   textilizable(link_to_issue(obj.parent, options))
                  else
                    textilizable("*no parent found*")
                  end
 
-        issue_stack.pop # Pop the current object off the stack since we're done with it
         output
       ensure
-        issue_stack.pop if issue_stack.any? # If the stack is empty, reset the processed issues set
+        issue_stack.pop if pushed # Only pop what this call pushed
       end
     end
 
@@ -92,6 +98,7 @@ module RedmineDescriptionMacros
 
         debug_messages = Setting.plugin_redmine_description_macros['enable_macro_debug_messages']
         issue_stack = Thread.current[:issue_obj_stack] ||= [] # Initialize the issue object stack if it doesn't exist
+        pushed = false
 
         obj ||= issue_stack.last # Try to get the object from the top of the stack if obj is nil
 
@@ -109,6 +116,7 @@ module RedmineDescriptionMacros
         next textilizable(debug_messages ? loop_detected_message : nil) if issue_stack.map(&:id).count(obj.id) > 1 # Check for loops using the stack
 
         issue_stack.push(obj) # Push the current object onto the stack
+        pushed = true
 
         output = ""
         siblings_found = 0
@@ -138,10 +146,9 @@ module RedmineDescriptionMacros
           output += textilizable("*no sibling found of tracker #{tracker}*") if siblings_found == 0 && loop_detected === false
         end
 
-        issue_stack.pop # Pop the current object off the stack since we're done with it
         output.html_safe if output
       ensure
-        issue_stack.pop if issue_stack.any? # If the stack is empty, reset the processed issues set
+        issue_stack.pop if pushed # Only pop what this call pushed
       end
     end
 
@@ -156,6 +163,7 @@ module RedmineDescriptionMacros
 
         debug_messages = Setting.plugin_redmine_description_macros['enable_macro_debug_messages']
         issue_stack = Thread.current[:issue_obj_stack] ||= [] # Initialize the issue object stack if it doesn't exist
+        pushed = false
 
         obj ||= issue_stack.last # Try to get the object from the top of the stack if obj is nil
 
@@ -173,31 +181,34 @@ module RedmineDescriptionMacros
         next textilizable(debug_messages ? loop_detected_message : nil) if issue_stack.map(&:id).count(obj.id) > 1 # Check for loops using the stack
 
         issue_stack.push(obj) # Push the current object onto the stack
+        pushed = true
 
         output = ""
         siblings_found = 0
         loop_detected = false
 
         if args.empty? or args.nil?
-          output += textilizable("*tracker name should be given as argument to macro sibling_description*")
+          output += textilizable("*tracker name should be given as argument to macro sibling_issue*")
         else
           tracker = args[0]
           if obj.parent&.present?
             obj.parent.children.each do |child|
-              if child.tracker.name == tracker
+              if child.tracker.name.downcase.strip == tracker.downcase.strip
                 if issue_stack.map(&:id).length != issue_stack.map(&:id).uniq.length
                   output += textilizable(debug_messages ? loop_detected_message : nil)
                   loop_detected = true
                 end
                 break if siblings_found == 1 || loop_detected === true
                 unless obj.id == child.id
-                  args, options = extract_macro_options(args, :project, :tracker, :subject)
-                  options.delete_if {|k, v| v != 'true' && v != 'false'} # remove invalid options
-                  options.each do |k, v| # turn string values into boolean
-                    options[k] = v == 'true'
+                  if child.visible?
+                    args, options = extract_macro_options(args, :project, :tracker, :subject)
+                    options.delete_if {|k, v| v != 'true' && v != 'false'} # remove invalid options
+                    options.each do |k, v| # turn string values into boolean
+                      options[k] = v == 'true'
+                    end
+                    output += link_to_issue(child, options)
+                    siblings_found += 1
                   end
-                  output += textilizable(link_to_issue(child, options))
-                  siblings_found += 1
                 end
               end
             end
@@ -205,10 +216,9 @@ module RedmineDescriptionMacros
           output += textilizable("*no sibling found of tracker #{tracker}*") if siblings_found == 0 && loop_detected === false
         end
 
-        issue_stack.pop # Pop the current object off the stack since we're done with it
         output.html_safe if output
       ensure
-        issue_stack.pop if issue_stack.any? # If the stack is empty, reset the processed issues set
+        issue_stack.pop if pushed # Only pop what this call pushed
       end
     end
 
@@ -219,6 +229,7 @@ module RedmineDescriptionMacros
 
         debug_messages = Setting.plugin_redmine_description_macros['enable_macro_debug_messages']
         issue_stack = Thread.current[:issue_obj_stack] ||= [] # Initialize the issue object stack if it doesn't exist
+        pushed = false
 
         obj ||= issue_stack.last # Try to get the object from the top of the stack if obj is nil
 
@@ -236,6 +247,7 @@ module RedmineDescriptionMacros
         next textilizable(debug_messages ? loop_detected_message : nil) if issue_stack.map(&:id).count(obj.id) > 1 # Check for loops using the stack
 
         issue_stack.push(obj) # Push the current object onto the stack
+        pushed = true
 
         output = ""
         children_found = 0
@@ -263,10 +275,9 @@ module RedmineDescriptionMacros
           output += textilizable("*no children found of tracker #{tracker}*") if children_found == 0 && loop_detected === false
         end
 
-        issue_stack.pop # Pop the current object off the stack since we're done with it
         output.html_safe if output
       ensure
-        issue_stack.pop if issue_stack.any? # If the stack is empty, reset the processed issues set
+        issue_stack.pop if pushed # Only pop what this call pushed
       end
     end
 
@@ -281,6 +292,7 @@ module RedmineDescriptionMacros
 
         debug_messages = Setting.plugin_redmine_description_macros['enable_macro_debug_messages']
         issue_stack = Thread.current[:issue_obj_stack] ||= [] # Initialize the issue object stack if it doesn't exist
+        pushed = false
 
         obj ||= issue_stack.last # Try to get the object from the top of the stack if obj is nil
 
@@ -298,6 +310,7 @@ module RedmineDescriptionMacros
         next textilizable(debug_messages ? loop_detected_message : nil) if issue_stack.map(&:id).count(obj.id) > 1 # Check for loops using the stack
 
         issue_stack.push(obj) # Push the current object onto the stack
+        pushed = true
 
         output = ""
         children_found = 0
@@ -315,23 +328,24 @@ module RedmineDescriptionMacros
               end
               break if children_found == 1 || loop_detected === true
               unless obj.id == child.id
-                args, options = extract_macro_options(args, :project, :tracker, :subject)
-                options.delete_if {|k, v| v != 'true' && v != 'false'} # remove invalid options
-                options.each do |k, v| # turn string values into boolean
-                  options[k] = v == 'true'
+                if child.visible?
+                  args, options = extract_macro_options(args, :project, :tracker, :subject)
+                  options.delete_if {|k, v| v != 'true' && v != 'false'} # remove invalid options
+                  options.each do |k, v| # turn string values into boolean
+                    options[k] = v == 'true'
+                  end
+                  output += link_to_issue(child, options)
+                  children_found += 1
                 end
-                output += textilizable(link_to_issue(child, options))
-                children_found += 1
               end
             end
           end
           output += textilizable("*no children found of tracker #{tracker}*") if children_found == 0 && loop_detected === false
         end
 
-        issue_stack.pop # Pop the current object off the stack since we're done with it
         output.html_safe if output
       ensure
-        issue_stack.pop if issue_stack.any? # If the stack is empty, reset the processed issues set
+        issue_stack.pop if pushed # Only pop what this call pushed
       end
     end
   end
