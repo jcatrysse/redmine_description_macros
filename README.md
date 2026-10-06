@@ -66,6 +66,7 @@ Then, restart your Redmine.
 ## Requirements
 * Redmine 4.x
 * Redmine 5.x
+* Redmine 7.0 (tested; 6.x and 5.x not re-tested after the 7.0 migration)
 
 ## License
 The MIT License (MIT)
