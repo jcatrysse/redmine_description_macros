@@ -18,7 +18,7 @@ what is left. Written 2026-10-06 from a measured analysis (report at the bottom)
 | Plugin id | `redmine_description_macros` |
 | GEOxyz runs today | `main` |
 | Upstream | geen |
-| Runs on Redmine 7 as is | JA |
+| Runs on Redmine 7 as is | JA (with the fixes below) |
 | Upstream sync | GEEN UPSTREAM |
 | After sync | n.v.t. |
 | Complexity (1 trivial .. 5 rewrite) | 1 |
@@ -27,7 +27,8 @@ what is left. Written 2026-10-06 from a measured analysis (report at the bottom)
 
 ## Already on this branch
 
-- nothing: the branch equals the branch GEOxyz runs today.
+- 9d59ddc tests (31, new) + fixes: visibility leaks in parent_issue/child_issue/sibling_issue, *_issue return the link directly (Textile, CSS classes), sibling_issue case-insensitive tracker and own message, issue stack popped too often.
+- end-to-end scenarios and screenshots (docs/e2e, docs/e2e/before), changelog, README.
 
 ## Work list for the migration session
 
@@ -44,6 +45,52 @@ In this order: things that break, security, the GEOxyz changes, the open items, 
 4. Check Redmine 7 webhooks against this plugin (see "Rules"), and note the result here even if nothing is needed.
 5. Verify every feature of the plugin by hand on a running Redmine 7 (screenshots).
 
+## Result of the migration session (2026-10-06)
+
+Work list: 1 done (link returned directly, also fixes Textile), 2 done (classes kept, e2e checks `a.issue`), 3 done on 7.0-stable-GEOxyz (5.1 not run: no 5.1 checkout/Ruby 3.3 mismatch; the fixes use only APIs that exist on 5.1), 4 done (see Webhooks), 5 done.
+
+Additional findings fixed (not in the analysis): `parent_issue`, `child_issue`, `sibling_issue` showed number and subject of issues the user may not see (information leak); the `ensure` pop emptied the stack of outer macros.
+
+**Baseline** (before changes): plugin had no tests; smoke 11/11 pages, core flows 6 screenshots, 0 problems, on PostgreSQL.
+
+**Numbers**
+
+| | PostgreSQL 16.15 | MariaDB 10.11.14 |
+|---|---|---|
+| plugin tests (`test/helpers/macros_test.rb`) | 31 runs, 53 assertions, 0 failures | 31 runs, 53 assertions, 0 failures |
+| e2e (production mode) | smoke 11, core 6, 10 scenarios (api, child_description, child_issue, macro_list, note, parent_description, parent_issue, settings, sibling_description, sibling_issue): 0 problems, 59 screenshots | same, 0 problems (screenshots in /tmp only, identical scenarios) |
+
+Tests that fail without the fixes: 8 of the 31 (checked by stashing macros.rb). Migrations: none. Eager load: production server booted on both. Not run together with other GEOxyz plugins (only this plugin installed here).
+
+OpenAI review (gpt-5, `docs/reviews/openai-2026-10-06-9c4cec1.md`): no findings. Own review: `output.html_safe` in the description macros only wraps `textilizable` and `link_to_issue` output (both escaped); no new settings, no schema change.
+
+**Webhooks**: the plugin changes only HTML rendering. Core webhook payloads (issues/show.api.rsb) deliver the description as typed, macros unexpanded, same as the REST API (scenario `api`). Consistent, nothing needed.
+
+**Inventory**
+
+| function | how a user reaches it | scenario | screenshots (docs/e2e/) |
+|---|---|---|---|
+| parent_description | `{{parent_description}}` in description or note | parent_description | parent_description-* (manager, reporter, no-parent, parent-private-reporter/manager) |
+| parent_issue (+ project/tracker/subject options) | `{{parent_issue(...)}}` | parent_issue | parent_issue-* |
+| sibling_description | `{{sibling_description(Tracker)}}` | sibling_description | sibling_description-* (manager, reporter, no-argument, no-parent) |
+| sibling_issue | `{{sibling_issue(Tracker, ...)}}` | sibling_issue | sibling_issue-* |
+| child_description | `{{child_description(Tracker)}}` | child_description | child_description-* (manager, reporter, outsider, no-argument) |
+| child_issue | `{{child_issue(Tracker, ...)}}` | child_issue | child_issue-* |
+| settings page (6 toggles + debug) | Administration > Plugins > Configure | settings | settings-* (defaults, off states, manager/reporter 403, anonymous login) |
+| macro_list / settings hint | `{{macro_list}}` in wiki preview | macro_list | macro_list-* |
+| macros in notes and note preview | issue edit form | note | note-* |
+| loop detection | parent/child macros referencing each other | settings (DM loop child) | settings-debug-off, settings-restored |
+| REST API / webhooks | /issues/:id.json | api | api-api-json |
+| mail, rake tasks, cron, routes | none in this plugin | n.v.t. | |
+
+`docs/e2e/before/` holds the child_issue, sibling_issue and parent_issue scenarios against the old code (b63d521) on Redmine 7: they fail there (links stripped/leaked), which is the evidence for the fixes.
+
+## Open questions for Jan
+
+1. Textile vs CommonMark: I made the *_issue macros return the link directly (option from the analysis). Alternative: keep textilizable. Recommendation: keep (done), it is the only way the link survives Textile and keeps classes.
+2. Hiding invisible issues in `*_issue` macros changes output for users without access (they now see "no ... found" / "parent not visible" instead of a link). Alternative: keep showing. Recommendation: keep hidden (done), the old output leaked private subjects.
+3. 5.1/6.1 were not run. If the branch must stay 5.1-compatible, run `./.codex/redmine_clone.sh 5.1-stable` and the tests once.
+
 ## GEOxyz changes to review or re-apply
 
 Own plugin: all of it is GEOxyz code, so there is nothing to re-apply. While migrating, hold the code you touch to the rules below; list larger quality problems you find in the work list instead of fixing them in passing.
@@ -52,7 +99,7 @@ Own plugin: all of it is GEOxyz code, so there is nothing to re-apply. While mig
 
 Actions the person doing the upgrade must take, or know about, for this plugin:
 
-- None known. Add here what the session finds.
+- None. No migrations, settings or data fixes. Restart Redmine after deploying the plugin. Output of `*_issue` macros is now hidden for users who cannot see the issue (see open question 2).
 
 ## How to test
 
