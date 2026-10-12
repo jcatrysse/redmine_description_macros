@@ -87,9 +87,9 @@ OpenAI review (gpt-5, `docs/reviews/openai-2026-10-06-9c4cec1.md`): no findings.
 
 ## Open questions for Jan
 
-1. Textile vs CommonMark: I made the *_issue macros return the link directly (option from the analysis). Alternative: keep textilizable. Recommendation: keep (done), it is the only way the link survives Textile and keeps classes.
-2. Hiding invisible issues in `*_issue` macros changes output for users without access (they now see "no ... found" / "parent not visible" instead of a link). Alternative: keep showing. Recommendation: keep hidden (done), the old output leaked private subjects.
-3. 5.1/6.1 were not run. If the branch must stay 5.1-compatible, run `./.codex/redmine_clone.sh 5.1-stable` and the tests once.
+1. Textile vs CommonMark: I made the *_issue macros return the link directly (option from the analysis). Alternative: keep textilizable. Recommendation: keep (done), it is the only way the link survives Textile and keeps classes. **Decided by Jan, 2026-10-12: keep.**
+2. Hiding invisible issues in `*_issue` macros changes output for users without access (they now see "no ... found" / "parent not visible" instead of a link). Alternative: keep showing. Recommendation: keep hidden (done), the old output leaked private subjects. **Decided by Jan, 2026-10-12: keep hidden.**
+3. 5.1/6.1 were not run. If the branch must stay 5.1-compatible, run `./.codex/redmine_clone.sh 5.1-stable` and the tests once. **Not needed: Redmine 5.1 compatibility is no longer a requirement (Jan, 2026-10-07).**
 
 ## GEOxyz changes to review or re-apply
 
