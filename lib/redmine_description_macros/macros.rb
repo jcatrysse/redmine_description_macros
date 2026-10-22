@@ -3,8 +3,8 @@ module RedmineDescriptionMacros
     Redmine::WikiFormatting::Macros.register do
       desc "Insert the description of the parent"
       macro :parent_description do |obj, args|
-        next unless Setting.plugin_redmine_description_macros['enable_parent_description_macro']
-        debug_messages = Setting.plugin_redmine_description_macros['enable_macro_debug_messages']
+        next unless RedmineDescriptionMacros.setting_enabled?('enable_parent_description_macro')
+        debug_messages = RedmineDescriptionMacros.setting_enabled?('enable_macro_debug_messages')
         issue_stack = Thread.current[:issue_obj_stack] ||= [] # Initialize the issue object stack if it doesn't exist
         pushed = false
         obj ||= issue_stack.last # Try to get the object from the top of the stack if obj is nil
@@ -48,8 +48,8 @@ module RedmineDescriptionMacros
              "{{parent_issue(tracker=false)}}               -- #123: Enhance macro capabilities\n" +
              "{{parent_issue(subject=false, project=true)}} -- Andromeda - Issue #123\n"
       macro :parent_issue do |obj, args|
-        next unless Setting.plugin_redmine_description_macros['enable_parent_issue_macro']
-        debug_messages = Setting.plugin_redmine_description_macros['enable_macro_debug_messages']
+        next unless RedmineDescriptionMacros.setting_enabled?('enable_parent_issue_macro')
+        debug_messages = RedmineDescriptionMacros.setting_enabled?('enable_macro_debug_messages')
         issue_stack = Thread.current[:issue_obj_stack] ||= [] # Initialize the issue object stack if it doesn't exist
         pushed = false
         obj ||= issue_stack.last # Try to get the object from the top of the stack if obj is nil
@@ -94,9 +94,9 @@ module RedmineDescriptionMacros
     Redmine::WikiFormatting::Macros.register do
       desc "Insert the description of the ticket's first found sibling of the given tracker"
       macro :sibling_description do |obj, args|
-        next unless Setting.plugin_redmine_description_macros['enable_sibling_description_macro']
+        next unless RedmineDescriptionMacros.setting_enabled?('enable_sibling_description_macro')
 
-        debug_messages = Setting.plugin_redmine_description_macros['enable_macro_debug_messages']
+        debug_messages = RedmineDescriptionMacros.setting_enabled?('enable_macro_debug_messages')
         issue_stack = Thread.current[:issue_obj_stack] ||= [] # Initialize the issue object stack if it doesn't exist
         pushed = false
 
@@ -159,9 +159,9 @@ module RedmineDescriptionMacros
              "{{sibling_issue(tracker_name, tracker=false)}}               -- #123: Enhance macro capabilities\n" +
              "{{sibling_issue(tracker_name, subject=false, project=true)}} -- Andromeda - Issue #123\n"
       macro :sibling_issue do |obj, args|
-        next unless Setting.plugin_redmine_description_macros['enable_sibling_issue_macro']
+        next unless RedmineDescriptionMacros.setting_enabled?('enable_sibling_issue_macro')
 
-        debug_messages = Setting.plugin_redmine_description_macros['enable_macro_debug_messages']
+        debug_messages = RedmineDescriptionMacros.setting_enabled?('enable_macro_debug_messages')
         issue_stack = Thread.current[:issue_obj_stack] ||= [] # Initialize the issue object stack if it doesn't exist
         pushed = false
 
@@ -225,9 +225,9 @@ module RedmineDescriptionMacros
     Redmine::WikiFormatting::Macros.register do
       desc "Insert the description of the ticket's first found child of the given tracker"
       macro :child_description do |obj, args|
-        next unless Setting.plugin_redmine_description_macros['enable_child_description_macro']
+        next unless RedmineDescriptionMacros.setting_enabled?('enable_child_description_macro')
 
-        debug_messages = Setting.plugin_redmine_description_macros['enable_macro_debug_messages']
+        debug_messages = RedmineDescriptionMacros.setting_enabled?('enable_macro_debug_messages')
         issue_stack = Thread.current[:issue_obj_stack] ||= [] # Initialize the issue object stack if it doesn't exist
         pushed = false
 
@@ -288,9 +288,9 @@ module RedmineDescriptionMacros
              "{{child_issue(tracker_name, tracker=false)}}               -- #123: Enhance macro capabilities\n" +
              "{{child_issue(tracker_name, subject=false, project=true)}} -- Andromeda - Issue #123\n"
       macro :child_issue do |obj, args|
-        next unless Setting.plugin_redmine_description_macros['enable_child_issue_macro']
+        next unless RedmineDescriptionMacros.setting_enabled?('enable_child_issue_macro')
 
-        debug_messages = Setting.plugin_redmine_description_macros['enable_macro_debug_messages']
+        debug_messages = RedmineDescriptionMacros.setting_enabled?('enable_macro_debug_messages')
         issue_stack = Thread.current[:issue_obj_stack] ||= [] # Initialize the issue object stack if it doesn't exist
         pushed = false
 

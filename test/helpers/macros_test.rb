@@ -195,6 +195,27 @@ class MacrosTest < Redmine::HelperTest
     assert_include 'child_issue', out
   end
 
+  # The settings were checked by truthiness: "0" set by a script counted as on.
+  def test_setting_off_values_disable_the_macro
+    ['0', 'false', '', false, nil].each do |value|
+      Setting.plugin_redmine_description_macros = DEFAULTS.merge('enable_child_issue_macro' => value)
+      out = render_description(@parent, '{{child_issue(Feature request)}}')
+      assert_not_include "/issues/#{@feature.id}", out, value.inspect
+    end
+  end
+
+  def test_setting_saved_by_the_form_enables_the_macro
+    Setting.plugin_redmine_description_macros = DEFAULTS.merge('enable_child_issue_macro' => '1')
+    out = render_description(@parent, '{{child_issue(Feature request)}}')
+    assert_include "/issues/#{@feature.id}", out
+  end
+
+  def test_debug_messages_saved_as_0_hide_messages
+    Setting.plugin_redmine_description_macros = DEFAULTS.merge('enable_macro_debug_messages' => '0')
+    out = textilizable('{{parent_description}}')
+    assert_not_include 'not initialized', out
+  end
+
   def test_macro_on_plain_text_without_issue
     out = textilizable('{{parent_description}}')
     assert_include 'object for macro is not initialized', out

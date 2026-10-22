@@ -29,6 +29,7 @@ what is left. Written 2026-10-06 from a measured analysis (report at the bottom)
 
 - 9d59ddc tests (31, new) + fixes: visibility leaks in parent_issue/child_issue/sibling_issue, *_issue return the link directly (Textile, CSS classes), sibling_issue case-insensitive tracker and own message, issue stack popped too often.
 - end-to-end scenarios and screenshots (docs/e2e, docs/e2e/before), changelog, README.
+- 2026-10-22, finding #25097: settings were checked by truthiness, so "0" or "false" set by a script counted as on. `RedmineDescriptionMacros.setting_enabled?` compares with what the form stores ("1") and the default (true); everything else is off. All 6 macro switches and the debug messages switch. Tests on 7.0-stable-GEOxyz 578730a, PostgreSQL 16.15: before 31 runs, 53 assertions; after 34 runs, 60 assertions, 0 failures; the new tests on the old code: 2 failures ("0", "false", "", false, nil for a macro; "0" for debug messages). e2e production mode: 12 scripts, 59 screenshots, 0 problems (no page changed, not recommitted).
 
 ## Work list for the migration session
 
@@ -99,7 +100,7 @@ Own plugin: all of it is GEOxyz code, so there is nothing to re-apply. While mig
 
 Actions the person doing the upgrade must take, or know about, for this plugin:
 
-- None. No migrations, settings or data fixes. Restart Redmine after deploying the plugin. Output of `*_issue` macros is now hidden for users who cannot see the issue (see open question 2).
+- None. No migrations, settings or data fixes. Restart Redmine after deploying the plugin. A setting stored as "0" or "false" by a script now really switches its macro (or the debug messages) off; settings saved through the form behave as before. Output of `*_issue` macros is now hidden for users who cannot see the issue (see open question 2).
 
 ## How to test
 
